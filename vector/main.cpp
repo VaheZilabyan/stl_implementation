@@ -10,8 +10,10 @@ int main()
     using namespace myStl;
     using namespace myVectorAllocator;
 
-    allocator<int> alloc;
-    vector<int, allocator<int>> vec ({1,2,3,4,5}, alloc);
+    //allocator<int> alloc;
+    //vector<int, allocator<int>> vec ({1,2,3,4,5}, alloc);
+
+    vector<int> vec = {1,2,3,4,5};
     vec.push_back(10);
     vec.push_back(20);
     vec.push_back(30);
@@ -23,6 +25,10 @@ int main()
         cout << vec[i] << " ";
     } cout << endl;
 
-    std::cout << "end..." << std::endl;
+    vector<int>::iterator it = vec.begin();
+    ++it;
+    cout << "*it = " << *it << endl;
+
+    cout << "end..." << endl;
     return 0;
 }

@@ -54,6 +54,11 @@ void vector<T, Allocator>::reserve(size_t n) {
 }
 
 template <typename T, typename Allocator>
+void vector<T, Allocator>::insert(const T& value) {
+
+}
+
+template <typename T, typename Allocator>
 void vector<T, Allocator>::push_back(const T& value) {
     if (size_ >= capacity_) {
         size_t newCapacity = (capacity_ == 0) ? 1 : (size_ * 2);
@@ -87,6 +92,11 @@ void vector<T, Allocator>::clear() {
     }
     alloc_.deallocate(arr_, size_);
     size_ = 0;
+}
+
+template<typename T, typename Allocator>
+void vector<T, Allocator>::shrink_to_fit() {
+    capacity_ = size_;
 }
 
 template<typename T, typename Allocator>
