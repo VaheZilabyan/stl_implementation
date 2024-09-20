@@ -41,10 +41,12 @@ void vector<T, Allocator>::reserve(size_t n) {
     if (n <= capacity_) return;
     T *newarr = alloc_.allocate(n);
 
+    /*T *newarr = alloc_.allocate(n, arr_);
+    std::cout << "old address: " << arr_ << "\n";
+    std::cout << "new address: " << newarr << "\n";*/
+
     for (size_t i = 0; i < size_; ++i) 	{
-        //new (newarr + i) T(arr_[i]);
         alloc_.construct(newarr + i, arr_[i]);
-        //(arr_ + i)->~T();
         alloc_.destroy(arr_ + i);
     }
 
@@ -54,8 +56,37 @@ void vector<T, Allocator>::reserve(size_t n) {
 }
 
 template <typename T, typename Allocator>
-void vector<T, Allocator>::insert(const T& value) {
+typename vector<T, Allocator>::iterator vector<T, Allocator>::insert(iterator pos, const T& value) {
+    size_t dif = pos - begin();
+    if (dif > size_) throw std::out_of_range("munmap_chunk(): invalid pointer");
+    if (size_ == capacity_) {
+        reserve(2 * size_);
+    }
 
+    auto it = end();
+    for(size_t i = size_; it != pos; --i, --it) {
+        T val = arr_[i - 1];
+        alloc_.construct(arr_ + i, val);
+    }
+    alloc_.construct(pos.get(), value);
+    ++size_;
+    return pos;
+}
+
+template <typename T, typename Allocator>
+typename vector<T, Allocator>::iterator vector<T, Allocator>::erase(iterator pos) {
+    size_t dif = pos - begin();
+    if (dif >= size_) throw std::out_of_range("position >= vector size");
+    if (dif == size_ - 1) {
+        pop_back();
+        return pos;
+    }
+    for (size_t i = dif; i < size_; ++i) {
+        T val = arr_[i + 1];
+        alloc_.construct(arr_ + i, val);
+    }
+    --size_;
+    return pos + 1;
 }
 
 template <typename T, typename Allocator>
