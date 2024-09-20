@@ -39,10 +39,10 @@ vector<T, Allocator>::vector(const std::initializer_list<T>& il, const Allocator
 template <typename T, typename Allocator>
 void vector<T, Allocator>::reserve(size_t n) {
     if (n <= capacity_) return;
-    T *newarr = alloc_.allocate(n);
+    //T *newarr = alloc_.allocate(n);
 
-    /*T *newarr = alloc_.allocate(n, arr_);
-    std::cout << "old address: " << arr_ << "\n";
+    T *newarr = alloc_.allocate(n, arr_);
+    /* std::cout << "old address: " << arr_ << "\n";
     std::cout << "new address: " << newarr << "\n";*/
 
     for (size_t i = 0; i < size_; ++i) 	{
@@ -125,9 +125,58 @@ void vector<T, Allocator>::clear() {
     size_ = 0;
 }
 
+template <typename T, typename Allocator>
+void vector<T, Allocator>::resize(size_t n, const T& value) {
+    if (n <= size_) {
+        size_ = n;
+    } else {
+        if (n > capacity_) {
+            reserve(n);
+            size_ = n;
+        }
+        else {
+            for (size_t i = size_; i < n; ++i) {
+                alloc_.construct(arr_ + i, value);
+            }
+            size_ = n;
+        }
+    }
+}
+
 template<typename T, typename Allocator>
 void vector<T, Allocator>::shrink_to_fit() {
     capacity_ = size_;
+}
+
+template <typename T, typename Allocator>
+T& vector<T, Allocator>::at(size_t i) {
+    if (i >= size_) throw std::out_of_range("index >= size");
+    return arr_[i];
+}
+
+template <typename T, typename Allocator>
+const T& vector<T, Allocator>::at(size_t i) const {
+    if (i >= size_) throw std::out_of_range("index >= size");
+    return arr_[i];
+}
+
+template<typename T, typename Allocator>
+vector<T, Allocator>& vector<T, Allocator>::operator=(const vector& other) {
+    if (this != &other) {
+        T *newarr = alloc_.allocate(other.capacity_);
+
+        for (size_t i = 0; i < other.size_; ++i) {
+            alloc_.construct(newarr + i, other[i]);
+        }
+        for (size_t i = 0; i < size_; ++i) {
+            alloc_.destroy(arr_ + i);
+        }
+        alloc_.deallocate(arr_, capacity_);
+        arr_ = newarr;
+        size_ = other.size_;
+        capacity_ = other.capacity_;
+    }
+    return *this;
 }
 
 template<typename T, typename Allocator>

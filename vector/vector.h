@@ -25,11 +25,20 @@ public:
     vector(const std::initializer_list<T>& il, const Allocator& alloc = Allocator());
     void reserve(size_t n);
     void push_back(const T& value);
+    void resize(size_t n, const_reference value = T());
     iterator insert(iterator pos, const T& value);
     iterator erase(iterator pos);
     void pop_back();
     void clear();
     void shrink_to_fit();
+    reference at(size_t i);
+    const_reference at(size_t i) const;
+    const_reference front() const {
+        return *begin();
+    }
+    const_reference back() const {
+        return *(end() - 1);
+    }
     size_t size() const {
         return size_;
     }
@@ -47,6 +56,7 @@ public:
     iterator end() {
         return iterator(arr_ + size_);
     }
+    vector& operator=(const vector& other);
     ~vector();
 public:
     class iterator {
