@@ -123,6 +123,12 @@ public:
         bool operator!=(iterator p) {
             return !(p.ptr_ == ptr_);
         }
+        bool operator<=(const iterator& other) const {
+            return ptr_ <= other.ptr_;
+        }
+        bool operator>=(const iterator& other) const {
+            return ptr_ >= other.ptr_;
+        }
         T* get() {
             return ptr_;
         }

@@ -3,32 +3,58 @@
 #include "allocator.h"
 #include "vector.h"
 
+using std::cout;
+using std::endl;
+using namespace myStl;
+using namespace myVectorAllocator;
+using my_vector = vector<int, allocator<int>>;
+
+struct base {
+    base() {
+        std::cout << "constructor\n";
+    }
+};
+
+void merge(my_vector::iterator left, my_vector::iterator right) {
+    auto mid = left + (right - left) / 2;
+    auto start1 = left;
+    auto start2 = mid + 1;
+    while (start1 <= mid && start2 <= right) {
+        if (*start1 <= *start2) {
+            start1++;
+        } else {
+            int value = *start2;
+            auto index = start2;
+
+            while (index != start1) {
+                *index = *(index - 1);
+                --index;
+            }
+            *start1 = value;
+            start1++;
+            mid++;
+            start2++;
+        }
+    }
+}
+
+void mergeSort(my_vector::iterator left, my_vector::iterator right) {
+    if (left != right) {
+        auto mid = left + (right - left) / 2;
+        mergeSort(left, mid);
+        mergeSort(mid + 1, right);
+        merge(left, right);
+    }
+}
+
 int main()
 {
-    using std::cout;
-    using std::endl;
-    using namespace myStl;
-    using namespace myVectorAllocator;
-    using my_vector = vector<int, allocator<int>>;
+    my_vector vec = {9, 3, 5, 2, 1, 4};
 
-    allocator<int> alloc;
-    my_vector vec ({1,2,3,4,5}, alloc);
+    mergeSort(vec.begin(), vec.end() - 1);
 
-    //vector<int> vec = {1,2,3,4,5};
-    vec.push_back(10);
-    vec.push_back(20);
-    vec.push_back(30);
-
-    cout << "capacity = " << vec.capacity() << endl;
-    //vec.pop_back();
-    //vec.pop_back();
-
-    my_vector::iterator it = vec.begin();
-    ++it;
-    auto pos = vec.insert(it, 99);
-
-    for (size_t i = 0; i < vec.size(); ++i) {
-        cout << vec[i] << " ";
+    for (int i : vec) {
+        cout << i << " ";
     } cout << endl;
 
     cout << "end..." << endl;
